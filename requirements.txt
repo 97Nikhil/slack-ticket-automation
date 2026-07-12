@@ -4,3 +4,5 @@ google-generativeai
 selenium
 requests
 webdriver-manager
+google-generativeai
+Pillow
