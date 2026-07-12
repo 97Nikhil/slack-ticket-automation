@@ -3,3 +3,4 @@ slack-sdk
 google-generativeai
 selenium
 requests
+webdriver-manager
