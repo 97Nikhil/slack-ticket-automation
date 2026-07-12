@@ -1,29 +1,27 @@
 # config.py
-# ─────────────────────────────────────────────────────
-# ALL personal credentials and settings live here.
-# Never share this file. Never upload it to GitHub.
-# ─────────────────────────────────────────────────────
+import os
+from dotenv import load_dotenv
+
+# Load .env file into environment
+load_dotenv()
 
 # ── Slack ──────────────────────────────────────────
-SLACK_TOKEN = ""
-
-# Your 2 channel IDs (right-click channel in Slack browser → copy link → last part)
+SLACK_TOKEN = os.getenv("SLACK_TOKEN")
 SLACK_CHANNEL_IDS = [
-    "C06P9C7B1RN",   # replace with channel 1 ID
-    "C06HVR8N4EQ",   # replace with channel 2 ID
+    os.getenv("SLACK_CHANNEL_ID_1"),
+    os.getenv("SLACK_CHANNEL_ID_2"),
 ]
 
 # ── Gemini ─────────────────────────────────────────
-GEMINI_API_KEY = ""
-GEMINI_MODEL   = "gemini-1.5-flash"   # free tier model
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL   = "gemini-1.5-flash"
 
 # ── Admin Panel ────────────────────────────────────
-ADMIN_PANEL_URL = "https://paste-your-admin-panel-url-here"
+ADMIN_PANEL_URL = os.getenv("ADMIN_PANEL_URL")
 
 # ── Google Form ────────────────────────────────────
-GOOGLE_FORM_URL = "https://docs.google.com/forms/d/YOUR_FORM_ID/viewform"
+GOOGLE_FORM_URL = os.getenv("GOOGLE_FORM_URL")
 
-# Form field entry IDs — get these by inspecting your form (we'll do this together)
 FORM_FIELDS = {
     "email":               "entry.000000001",
     "date":                "entry.000000002",
@@ -40,18 +38,18 @@ FORM_FIELDS = {
 }
 
 # ── Hardcoded Values ───────────────────────────────
-FIXED_CHANNEL   = "Slack"
-FIXED_AGING     = "0-1"
-FIXED_EMAIL     = "nikhil.01@convertway.in"
+FIXED_CHANNEL = "Slack"
+FIXED_AGING   = "0-1"
+FIXED_EMAIL   = "nikhil.01@convertway.in"
 
-# ── Priority Rules (based on order count) ──────────
+# ── Priority Rules ─────────────────────────────────
 PRIORITY_RULES = {
     "unmanaged": {"max": 10,  "label": "Unmanaged (Very Small Customers, Very small issue)"},
     "p2":        {"max": 100, "label": "P2"},
     "p1":        {"min": 100, "label": "P1 (Irate Customers, High Value Customers)"},
 }
 
-# ── Query Type Options (exactly as in Google Form) ─
+# ── Query Type Options ─────────────────────────────
 QUERY_TYPES = [
     "SMS/RCS",
     "Campagin/Template Related",
@@ -70,7 +68,7 @@ QUERY_TYPES = [
     "Store Related",
 ]
 
-# ── Status Options (exactly as in Google Form) ─────
+# ── Status Options ─────────────────────────────────
 STATUS_OPTIONS = [
     "Pending from support",
     "Pending from tech team",
@@ -81,7 +79,6 @@ STATUS_OPTIONS = [
 ]
 
 # ── Keyword → Status Mapping ───────────────────────
-# Keywords found in thread replies → mapped to exact form value
 STATUS_KEYWORDS = {
     "resolved":          "Resolved",
     "resolve":           "Resolved",
@@ -94,3 +91,15 @@ STATUS_KEYWORDS = {
 
 # ── Database ───────────────────────────────────────
 DB_PATH = "database/tickets.db"
+
+# ── Validation — warns you if any key is missing ──
+def validate_config():
+    required = {
+        "SLACK_TOKEN": SLACK_TOKEN,
+        "GEMINI_API_KEY": GEMINI_API_KEY,
+        "ADMIN_PANEL_URL": ADMIN_PANEL_URL,
+        "GOOGLE_FORM_URL": GOOGLE_FORM_URL,
+    }
+    missing = [k for k, v in required.items() if not v]
+    if missing:
+        raise ValueError(f"Missing required config values: {missing}\nCheck your .env file.")
