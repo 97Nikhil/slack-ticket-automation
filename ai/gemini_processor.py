@@ -6,7 +6,8 @@ import base64
 from typing import Optional
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from PIL import Image
 
 from config import (
@@ -37,12 +38,7 @@ class GeminiProcessor:
     """
 
     def __init__(self):
-        """
-        Configures the Gemini API with your key.
-        Initializes the model once — reused for all tickets.
-        """
-        genai.configure(api_key=GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(GEMINI_MODEL)
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
         print("✅ Gemini processor ready")
 
 
@@ -295,7 +291,10 @@ No markdown. No code blocks. Just the raw JSON.
             # Build content list — prompt first, then images
             content = [prompt] + images
 
-            response = self.model.generate_content(content)
+            response = self.client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=content
+            )
             response_text = response.text
             print(f"   ✅ Gemini responded")
 
