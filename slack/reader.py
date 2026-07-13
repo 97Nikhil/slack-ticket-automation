@@ -3,6 +3,7 @@
 import os
 import re
 import requests
+from typing import Optional
 from datetime import datetime
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
