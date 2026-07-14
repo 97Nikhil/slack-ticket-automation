@@ -57,30 +57,29 @@ class AdminScraper:
 
     def connect(self):
         """
-        Connects Selenium to your already-open Chrome browser
-        using remote debugging port 9222.
-
-        This does NOT open a new Chrome window.
-        It attaches to the Chrome you already have open.
-
-        Call this once at the start of the script,
-        before processing any tickets.
+        Launch Chrome using your existing profile so all your logins
+        (Admin Panel, Google, etc.) are already available.
         """
+
         options = Options()
 
-        # Tell Selenium to connect to existing Chrome
-        # instead of opening a new one
-        options.add_experimental_option(
-            "debuggerAddress", "127.0.0.1:9222"
+        # Your Chrome profile
+        options.add_argument(
+            r"--user-data-dir=C:\Users\nikhi\AppData\Local\Google\Chrome\User Data"
         )
+        options.add_argument("--profile-directory=Default")
 
-        self.driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options
-        )
-        print("✅ Connected to Chrome browser")
+        # Prevent "Chrome is being controlled by automated software" message
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
 
-        # Find and store tab handles for admin panel
+        # Launch Chrome (Selenium Manager downloads the correct driver automatically)
+        self.driver = webdriver.Chrome(options=options)
+
+        print("✅ Chrome launched successfully")
+        print("⏳ Waiting for Chrome to load...")
+        time.sleep(5)
+
         self._identify_tabs()
 
 
