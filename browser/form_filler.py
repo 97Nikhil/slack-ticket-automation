@@ -133,40 +133,25 @@ class FormFiller:
 
 
     def _fill_date_field(self, entry_id: str, date_str: str):
-        """
-        Fills a date field in Google Forms.
-
-        Date fields are special — you can't just type in them
-        normally. We need to:
-        1. Click the field
-        2. Clear it completely
-        3. Type date in MM/DD/YYYY format (Google Forms format)
-
-        date_str comes in as "2026-07-12" (YYYY-MM-DD)
-        we convert to "07/12/2026" (MM/DD/YYYY)
-        """
         if not date_str:
             return
-
         try:
-            # Convert date format
             date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-            formatted = date_obj.strftime("%m/%d/%Y")
 
-            field = self._wait_for_element(By.NAME, entry_id)
-            field.click()
-
-            # Select all existing text and delete it
-            field.send_keys(Keys.CONTROL + "a")
-            field.send_keys(Keys.DELETE)
-
-            # Type the date
-            field.send_keys(formatted)
+            # Find the date input directly by type
+            date_input = self._wait_for_element(
+                By.CSS_SELECTOR, "input[type='date']"
+            )
+            date_input.click()
+            date_input.send_keys(Keys.CONTROL + "a")
+            date_input.send_keys(Keys.DELETE)
+            # Send in YYYY-MM-DD format which is what HTML date inputs expect
+            date_input.send_keys(date_obj.strftime("%Y-%m-%d"))
 
         except TimeoutException:
-            print(f"   ⚠️  Date field not found: {entry_id}")
+            print(f"   ⚠️  Date field not found")
         except Exception as e:
-            print(f"   ⚠️  Could not fill date field {entry_id}: {e}")
+            print(f"   ⚠️  Could not fill date field: {e}")
 
 
     def _select_radio_button(self, option_text: str):
@@ -224,9 +209,8 @@ class FormFiller:
         print("\n   📝 Filling form fields...")
 
         # ── Email ──────────────────────────────────────────
-        # Google Forms auto-fills email if user is logged in
-        # We skip this — it's handled by the form itself
-        print(f"   ✓  Email: {form_data['email']} (auto-filled by Google)")
+        # Email is a checkbox pre-filled by Google — click it manually
+        print(f"   ✓  Email: auto-handled by Google (click checkbox manually if needed)")
 
         # ── Date ───────────────────────────────────────────
         print(f"   ✓  Date: {form_data['date']}")

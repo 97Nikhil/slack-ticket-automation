@@ -23,18 +23,18 @@ ADMIN_PANEL_URL = os.getenv("ADMIN_PANEL_URL")
 GOOGLE_FORM_URL = os.getenv("GOOGLE_FORM_URL")
 
 FORM_FIELDS = {
-    "email":               "entry.000000001",
-    "date":                "entry.000000002",
-    "brand_name":          "entry.000000003",
-    "store_url":           "entry.000000004",
-    "order_count":         "entry.000000005",
-    "average_consumption": "entry.000000006",
-    "query_type":          "entry.000000007",
-    "status":              "entry.000000008",
-    "channel":             "entry.000000009",
-    "priority":            "entry.000000010",
-    "aging":               "entry.000000011",
-    "remarks":             "entry.000000012",
+    "email":               "emailAddress",       # special field — not entry.xxx
+    "date":                "entry.2008450749",   # date field (splits into _year _month _day)
+    "brand_name":          "entry.504235780",
+    "store_url":           "entry.779455465",
+    "order_count":         "entry.1450916064",
+    "average_consumption": "entry.1807040935",
+    "query_type":          "entry.1053956291",
+    "status":              "entry.298503497",
+    "channel":             "entry.1262316531",
+    "priority":            "entry.1023708205",
+    "aging":               "entry.662103023",
+    "remarks":             "entry.1863345591",
 }
 
 # ── Hardcoded Values ───────────────────────────────
