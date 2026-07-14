@@ -14,7 +14,7 @@ SLACK_CHANNEL_IDS = [
 
 # ── Gemini ─────────────────────────────────────────
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL   = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-2.0-flash"
 
 # ── Admin Panel ────────────────────────────────────
 ADMIN_PANEL_URL = os.getenv("ADMIN_PANEL_URL")

@@ -145,16 +145,8 @@ class AdminScraper:
         """
         Searches for the store in admin panel and scrapes:
         - Order Count
-        - Install Date
+        - Install Date  
         - Used Amount
-
-        Returns a dict with these values, or empty dict if failed.
-
-        Looking at your admin panel screenshot:
-        - Search dropdown is set to "Store URL"
-        - There's an input field for the URL
-        - Filter button submits the search
-        - Results show in a table row under "Store Details"
         """
         result = {}
 
@@ -164,61 +156,51 @@ class AdminScraper:
             print(f"   🔍 Searching admin panel for: {store_url}")
 
             # Extract just the domain from full URL
-            # https://myadira.myshopify.com → myadira.myshopify.com
             domain = store_url.replace("https://", "").replace("http://", "").rstrip("/")
 
-            # ── Step 1: Make sure "Store URL" is selected in dropdown ──
-            # Find the dropdown that switches between search types
-            dropdown = self._wait_for_element(By.CSS_SELECTOR, "select")
+            # ── Step 1: Select "Store URL" from dropdown ──
             from selenium.webdriver.support.ui import Select
+            dropdown = self._wait_for_element(By.ID, "filter_type")
             select = Select(dropdown)
-            select.select_by_visible_text("Store URL")
+            select.select_by_value("store_name")
+            time.sleep(1)
 
             # ── Step 2: Clear input and type store URL ──
-            search_input = self._wait_for_element(
-                By.CSS_SELECTOR, "input[type='text']"
-            )
+            search_input = self._wait_for_element(By.ID, "filter_value")
             search_input.clear()
             search_input.send_keys(domain)
+            time.sleep(0.5)
 
             # ── Step 3: Click Filter button ──
             filter_button = self._wait_for_element(
-                By.XPATH, "//button[contains(text(), 'Filter')]"
+                By.XPATH, "//button[@type='submit' and contains(text(), 'Filter')]"
             )
             filter_button.click()
 
-            # ── Step 4: Wait for results to load ──
-            time.sleep(2)
+            # ── Step 4: Wait for results ──
+            time.sleep(3)
 
             # ── Step 5: Scrape Store Details column ──
-            # From your screenshot, store details are in a cell
-            # containing text like:
-            # "Order Count: 7640"
-            # "Used Amount: $7327.74"
-            # "Install Date: 2026-03-30"
-
             store_details = self._wait_for_element(
                 By.XPATH,
-                "//td[contains(@class, 'store-details') or .//text()[contains(., 'Order Count')]]"
+                "//*[contains(text(), 'Order Count')]"
             )
 
-            details_text = store_details.text
+            # Get the parent cell which contains all store details
+            details_cell = store_details.find_element(By.XPATH, "./ancestor::td")
+            details_text = details_cell.text
             print(f"   📋 Raw details: {details_text}")
 
-            # ── Step 6: Parse the scraped text ──
-            # Extract Order Count
+            # ── Step 6: Parse scraped text ──
             order_match = re.search(r'Order Count[:\s]+([0-9,]+)', details_text)
             if order_match:
-                # Remove commas from numbers like "7,640" → 7640
                 result["order_count"] = int(order_match.group(1).replace(",", ""))
 
-            # Extract Used Amount (remove $ and convert to float)
             used_match = re.search(r'Used Amount[:\s]+\$?([0-9,\.]+)', details_text)
             if used_match:
                 result["used_amount"] = float(used_match.group(1).replace(",", ""))
 
-            # Extract Install Date
-            date_match = re.search(r'Install Date[:\s]+(\d{4}-\d{2}-\d{2})', details_text)
+            date_match = re.search(r'(\d{4}-\d{2}-\d{2})', details_text)
             if date_match:
                 result["install_date"] = date_match.group(1)
 
@@ -230,7 +212,6 @@ class AdminScraper:
             print(f"   ⚠️  Admin panel scraping failed: {e}")
 
         return result
-
 
     def _scrape_brand_name(self, store_url: str) -> Optional[str]:
         """

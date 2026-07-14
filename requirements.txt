@@ -5,5 +5,5 @@ selenium
 requests
 webdriver-manager
 google-generativeai
-Pillowpip
+Pillow
 google-genai
